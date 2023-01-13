@@ -15,10 +15,10 @@ def apiVersion = rootProject.ext.riruApiVersion
 def minApiVersion = rootProject.ext.riruMinApiVersion
 def moduleProps = [
         id         : "riru-core",
-        name       : "Riru",
+        name       : "Riru for KernelSU",
         version    : "$versionName",
         versionCode: "$versionCode",
-        author     : "Rikka, yujincheng08",
+        author     : "Rikka, yujincheng08, canyie",
         description: 'Inject into zygote and run codes from "Riru" modules in apps or the system server. Support modules which use Riru API v24+.',
         riruApi    : "$apiVersion",
         riruMinApi : "$minApiVersion"

@@ -26,14 +26,14 @@ namespace magisk {
     }
 
     std::string GetPathForSelf(const char *name) {
-        return GetPath() + "/.magisk/modules/riru-core/"s + name;
+        return GetPath() + "/modules/riru-core/"s + name;
     }
 
     std::string GetPathForSelfLib(const char *name) {
 #ifdef __LP64__
-        return GetPath() + "/.magisk/modules/riru-core/lib64/"s + name;
+        return GetPath() + "/modules/riru-core/lib64/"s + name;
 #else
-        return GetPath() + "/.magisk/modules/riru-core/lib/"s + name;
+        return GetPath() + "/modules/riru-core/lib/"s + name;
 #endif
     }
 }  // namespace magisk

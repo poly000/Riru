@@ -158,18 +158,26 @@ public class Daemon implements IBinder.DeathRecipient {
     }
 
     public static void main(String[] args) {
-        DaemonUtils.init(args);
-        DaemonUtils.writeStatus(R.string.app_process);
-        int magiskVersionCode = DaemonUtils.getMagiskVersionCode();
-        String magiskTmpfsPath = DaemonUtils.getMagiskTmpfsPath();
+        try {
+            Log.i(TAG, "Start rirud");
+            DaemonUtils.init(args);
+            DaemonUtils.writeStatus(R.string.app_process);
+            int magiskVersionCode = DaemonUtils.getMagiskVersionCode();
+            String magiskTmpfsPath = DaemonUtils.getMagiskTmpfsPath();
 
-        Log.i(TAG, "Magisk version is " + magiskVersionCode);
-        Log.i(TAG, "Magisk tmpfs path is " + magiskTmpfsPath);
-        Log.i(TAG, "Original native bridge is " + DaemonUtils.getOriginalNativeBridge());
-        Log.i(TAG, "Dev random is " + DaemonUtils.getDevRandom());
+            Log.i(TAG, "Magisk version is " + magiskVersionCode);
+            Log.i(TAG, "Magisk tmpfs path is " + magiskTmpfsPath);
+            Log.i(TAG, "Original native bridge is " + DaemonUtils.getOriginalNativeBridge());
+            Log.i(TAG, "Dev random is " + DaemonUtils.getDevRandom());
 
-        Looper.prepare();
-        new Daemon();
-        Looper.loop();
+            Looper.prepare();
+            new Daemon();
+            Looper.loop();
+        } catch (Throwable e) {
+            e.printStackTrace(System.out);
+            e.printStackTrace(System.err);
+        }
+        System.out.println("Rirud exiting");
+        System.exit(1);
     }
 }

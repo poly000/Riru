@@ -16,6 +16,8 @@ fi
 
 ui_print "- Installing Riru $RIRU_VERSION_NAME (Riru API $RIRU_API)"
 
+[ "$KSU" != "true" ] && abort "! Only supports KernelSU, please use official Riru instead"
+
 # check Magisk
 ui_print "- Magisk version: $MAGISK_VER ($MAGISK_VER_CODE)"
 
@@ -27,8 +29,8 @@ else
   ui_print "- Device sdk: $API"
 fi
 
-# check architecture
-if [ "$ARCH" != "arm" ] && [ "$ARCH" != "arm64" ] && [ "$ARCH" != "x86" ] && [ "$ARCH" != "x64" ]; then
+# check architecture, kernelsu only supports arm64
+if [ "$ARCH" != "arm64" ] && [ "$ARCH" != "x64" ]; then
   abort "! Unsupported platform: $ARCH"
 else
   ui_print "- Device platform: $ARCH"
@@ -48,23 +50,25 @@ extract "$ZIPFILE" 'verify.sh' "$TMPDIR/.vunzip"
 
 ui_print "- Extracting Magisk files"
 
-if [ "$MAGISK_VER_CODE" -ge 21000 ]; then
-  MAGISK_CURRENT_MODULE_PATH=$(magisk --path)/.magisk/modules/riru-core
-else
-  MAGISK_CURRENT_MODULE_PATH=/sbin/.magisk/modules/riru-core
-fi
+#if [ "$MAGISK_VER_CODE" -ge 21000 ]; then
+#  MAGISK_CURRENT_MODULE_PATH=$(magisk --path)/.magisk/modules/riru-core
+#else
+#  MAGISK_CURRENT_MODULE_PATH=/sbin/.magisk/modules/riru-core
+#fi
+#MAGISK_CURRENT_MODULE_PATH=/data/adb/ksu/modules/riru-core
 
 extract "$ZIPFILE" 'module.prop' "$MODPATH"
 cp "$MODPATH/module.prop" "$MODPATH/module.prop.bk"
 extract "$ZIPFILE" 'post-fs-data.sh' "$MODPATH"
 extract "$ZIPFILE" 'service.sh' "$MODPATH"
 extract "$ZIPFILE" 'system.prop' "$MODPATH"
+extract "$ZIPFILE" 'sepolicy.rule' "$MODPATH"
 extract "$ZIPFILE" 'util_functions.sh' "$MODPATH"
 extract "$ZIPFILE" 'uninstall.sh' "$MODPATH"
 
-mkdir $MAGISK_CURRENT_MODULE_PATH
-rm "$MAGISK_CURRENT_MODULE_PATH"/util_functions.sh
-cp "$MODPATH"/util_functions.sh "$MAGISK_CURRENT_MODULE_PATH"/util_functions.sh
+#mkdir $MAGISK_CURRENT_MODULE_PATH
+#rm "$MAGISK_CURRENT_MODULE_PATH"/util_functions.sh
+#cp "$MODPATH"/util_functions.sh "$MAGISK_CURRENT_MODULE_PATH"/util_functions.sh
 
 mkdir "$MODPATH/lib"
 mkdir "$MODPATH/lib64"
@@ -104,6 +108,23 @@ set_perm_recursive "$MODPATH" 0 0 0755 0644
 ui_print "- Extracting rirud"
 extract "$ZIPFILE" "rirud.apk" "$MODPATH"
 set_perm "$MODPATH/rirud.apk" 0 0 0600
+
+if [ "$ARCH" = "x64" ]; then
+  ui_print "- Extracting x64 Magisk binaries"
+  extract "$ZIPFILE" "magisk_x64" "$MODPATH"
+  extract "$ZIPFILE" "magiskpolicy_x64" "$MODPATH"
+  mv "$MODPATH/magisk_x64" "$MODPATH/magisk"
+  mv "$MODPATH/magiskpolicy_x64" "$MODPATH/magiskpolicy"
+else
+  ui_print "- Extracting arm64 Magisk binaries"
+  extract "$ZIPFILE" "magisk" "$MODPATH"
+  extract "$ZIPFILE" "magiskpolicy" "$MODPATH"
+fi
+
+set_perm "$MODPATH/magisk" 0 0 0700
+set_perm "$MODPATH/magiskpolicy" 0 0 0700
+
+ln -s "magisk" "$MODPATH/resetprop"
 
 ui_print "- Checking if your ROM has incorrect SELinux rules"
 /system/bin/app_process -Djava.class.path="$MODPATH/rirud.apk" /system/bin --nice-name=riru_installer riru.Installer --check-selinux

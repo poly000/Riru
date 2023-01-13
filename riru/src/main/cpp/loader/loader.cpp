@@ -75,7 +75,7 @@ __used __attribute__((constructor)) void Constructor() {
 
     BuffString<PATH_MAX> riru_path;
     riru_path += magisk_path;
-    riru_path += "/.magisk/modules/riru-core/lib";
+    riru_path += "/modules/riru-core/lib";
 #ifdef __LP64__
     riru_path += "64";
 #endif

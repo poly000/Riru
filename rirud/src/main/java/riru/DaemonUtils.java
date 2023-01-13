@@ -103,7 +103,7 @@ public class DaemonUtils {
             service.submit(modules);
         }
 
-        File magiskDir = new File(DaemonUtils.getMagiskTmpfsPath(), ".magisk/modules/riru-core");
+        File magiskDir = new File(DaemonUtils.getMagiskTmpfsPath(), "modules/riru-core");
 
         if (has64Bit()) {
             fileContext &= checkOrResetContextForChildren(new File(magiskDir, "lib64"));
@@ -541,7 +541,7 @@ public class DaemonUtils {
         Map<String, List<Pair<String, String>>> m = new ConcurrentHashMap<>();
 
         String riruLibPath = "riru/" + (is64 ? "lib64" : "lib");
-        File[] magiskDirs = new File(DaemonUtils.getMagiskTmpfsPath(), ".magisk/modules").listFiles();
+        File[] magiskDirs = new File(DaemonUtils.getMagiskTmpfsPath(), "modules").listFiles();
         if (magiskDirs == null) {
             return Collections.emptyMap();
         }

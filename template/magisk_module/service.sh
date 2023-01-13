@@ -1,4 +1,7 @@
 #!/system/bin/sh
+# Do nothing
+exit
+
 MODDIR=${0%/*}
 TMPPROP="$(magisk --path)/riru.prop"
 MIRRORPROP="$(magisk --path)/.magisk/modules/riru-core/module.prop"
